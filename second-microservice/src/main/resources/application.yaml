@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: second-microservice
+server:
+  port: 8082
+
+  eureka:
+    instance:
+      hostname: localhost
