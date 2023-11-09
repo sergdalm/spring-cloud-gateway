@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockserver.integration.ClientAndServer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
@@ -16,11 +17,14 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.ArrayList;
 
+import static org.mockserver.integration.ClientAndServer.startClientAndServer;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @Import(SpringCloudGatewayApplication.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class SpringCloudGatewayTest {
+
+    private static ClientAndServer mockServer;
 
     private static int managementPort;
 
@@ -36,11 +40,15 @@ public class SpringCloudGatewayTest {
         managementPort = TestSocketUtils.findAvailableTcpPort();
 
         System.setProperty("test.port", String.valueOf(managementPort));
+
+        mockServer = startClientAndServer(9000);
     }
 
     @AfterAll
     public static void afterClass() {
         System.clearProperty("test.port");
+
+        mockServer.stop();
     }
 
     @BeforeEach
@@ -81,35 +89,6 @@ public class SpringCloudGatewayTest {
                 })
                 .thenCancel()
                 .verify();
-    }
-
-
-    // Run admin/AdminApplication and first-microservice/FirstMicroserviceApplication before running this test.
-    @Test
-    public void makeRequestWithAuthorizationHeader() {
-        var result = webClient.get()
-                .uri("/first")
-                .header("authorization", "111")
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().valuesMatch("X-User-info", ".+")
-                .returnResult(String.class);
-        var XUserInfoHeader = result.getResponseHeaders().get("X-User-info");
-
-        webClient.get()
-                .uri("/first")
-                .header("X-User-info", XUserInfoHeader.get(0))
-                .exchange()
-                .expectStatus().isOk();
-    }
-
-    // Run second-microservice/SecondMicroserviceApplication before running this test.
-    @Test
-    public void makeRequestWithoutAuthorizationHeader() {
-        webClient.get()
-                .uri("/second")
-                .exchange()
-                .expectStatus().isOk();
     }
 
 }

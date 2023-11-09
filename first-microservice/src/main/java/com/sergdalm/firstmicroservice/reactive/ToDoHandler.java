@@ -51,4 +51,10 @@ public class ToDoHandler {
                                 .body(fromValue(t)));
     }
 
+    public Mono<ServerResponse> getHello(ServerRequest request) {
+        return ServerResponse
+                .ok()
+                .contentType(APPLICATION_JSON)
+                .body(fromValue("Hello!"));
+    }
 }

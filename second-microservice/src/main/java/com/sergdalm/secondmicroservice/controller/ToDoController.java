@@ -31,6 +31,11 @@ public class ToDoController {
         return this.repository.findAll();
     }
 
+    @GetMapping("/string")
+    public Mono<String> getHello() {
+        return Mono.just("Hello!");
+    }
+
     @PostMapping
     public Mono<Memo> save(@RequestBody ToDoCreateDto todo) {
         return repository.save(todo);

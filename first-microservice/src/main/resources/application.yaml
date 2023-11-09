@@ -3,7 +3,3 @@ spring:
     name: first-microservice
 server:
   port: 8081
-
-  eureka:
-    instance:
-      hostname: localhost

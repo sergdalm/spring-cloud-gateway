@@ -17,7 +17,9 @@ public class ToDoRouter {
 
     @Bean
     public RouterFunction<ServerResponse> monoRouterFunction(ToDoHandler toDoHandler) {
-        return route(GET("/first/{id}").and(accept(APPLICATION_JSON)),
+        return route(GET("/first/hello").and(accept(APPLICATION_JSON)),
+                toDoHandler::getHello)
+                .andRoute(GET("/first/{id}").and(accept(APPLICATION_JSON)),
                 toDoHandler::getToDo)
                 .andRoute(GET("/first").and(accept(APPLICATION_JSON)),
                         toDoHandler::getToDos)
